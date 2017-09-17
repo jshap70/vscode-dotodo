@@ -1,0 +1,15 @@
+{
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "no-unused-expression": true,
+        "no-duplicate-variable": true,
+        "no-unused-variable": true,
+        "semicolon": [true, "always"],
+        "max-line-length": [false],
+        "no-console": false,
+        "quotemark": false
+    }
+}
+
