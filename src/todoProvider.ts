@@ -1,15 +1,55 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import Todo from './todo.ts'
+import { Task, MatchCommentMarker } from './tasks';
 
-class TodoNode extends vscode.TreeItem {
+class File extends vscode.TreeItem {
 
     constructor(
-        public readonly label: string,
-        public readonly todo:  Todo,
+        label,
+        public uri: vscode.Uri
     ) {
-        super(label)
+        super(label);
     }
+
+}
+
+export class TodoList implements vscode.TreeDataProvider<Task | File> {
+
+    // TODO
+    public onDidChangeTreeData?: vscode.Event<Task>;
+
+    // actual storage map for tasks,
+    // stored by file uri in string form b/c typescript maps only allow numbers and strings as keys
+    private list: { [file: string]: Task[]; } = {};
+
+    constructor(
+        files?: vscode.TextDocument[],
+    ) {
+        for (let file of files) {
+            // scan file
+            // story by `file.uri` into this.list
+        }
+    }
+
+    // TODO
+    public getTreeItem(element: Task): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        throw new Error("Method not implemented.");
+    }
+
+    // TODO
+    public getChildren(element?: Task): vscode.ProviderResult<Task[]> {
+        if (element !== undefined) {
+            let fileTasks = this.list[element.file.toString()];
+            for (let task of fileTasks) {
+                if (element.line === task.line) {
+                    return [ task ];
+                }
+            }
+        }
+
+        throw new Error("Method not implemented.");
+    }
+
+
 
 }
 
