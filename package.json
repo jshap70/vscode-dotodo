@@ -38,11 +38,16 @@
             ]
         },
         "configuration": {
+            "type": "object",
             "title": "dotodo Todo Manager configuration",
             "properties": {
                 "dotodo.labels": {
                     "type": "array",
-                    "default": ["todo", "fixme", "note"],
+                    "default": [
+                        "todo",
+                        "fixme",
+                        "note"
+                    ],
                     "description": "Labels to look for when matching patterns like `# label: ...`"
                 }
             }
@@ -56,9 +61,10 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.5.2",
+        "typescript": "^2.5.3",
         "vscode": "^1.1.5",
         "mocha": "^3.5.0",
+        "tslint": "^5.7.0",
         "@types/node": "^7.0.43",
         "@types/mocha": "^2.2.42"
     }

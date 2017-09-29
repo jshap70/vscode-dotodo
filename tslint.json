@@ -2,10 +2,10 @@
     "extends": [
         "tslint:recommended"
     ],
+    "defaultSeverity": "warn",
     "rules": {
         "no-unused-expression": true,
         "no-duplicate-variable": true,
-        "no-unused-variable": true,
         "semicolon": [true, "always"],
         "max-line-length": [false],
         "no-console": false,
@@ -14,7 +14,11 @@
         "member-ordering": false,
         "no-conditional-assignment": false,
         "max-classes-per-file": false,
-        "prefer-const": false
+        "prefer-const": false,
+        "no-empty": true,
+        "no-var-requires": false,
+        "no-var-keyword": {"severity": "default"},
+        "trailing-comma": {"severity": "default"}
     }
 }
 

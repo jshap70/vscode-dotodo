@@ -7,8 +7,7 @@ import * as vscode from 'vscode';
 //
 // cool stuff.
 // also btw is case insensitive
-export let matchTaskString = '^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$';
-// export var matchTask = new RegExp(regexString, 'gim');
+export let matchTask = /^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$/gmi;
 
 // Todo Object, stores relevant info i
 export class Task extends vscode.TreeItem {
