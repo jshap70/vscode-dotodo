@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 //
 // cool stuff.
 // also btw is case insensitive
+//
+// FIXME: make it so that this also can match `# TODO` w/ no message
 export let matchTask = /^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$/gmi;
 
 // Todo Object, stores relevant info i
