@@ -1,15 +1,16 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import { TodoList } from './todoProvider';
-
+import { TaskFactory, TodoList  } from './todoProvider';
 
 export function activate(context: vscode.ExtensionContext) {
+    let config = vscode.workspace.getConfiguration('dotodo');
 
-    let todos: TodoList;
+    let factory = new TaskFactory( config.get("dotodo.labels") );
+    let todos: TodoList = new TodoList(factory);
 
-    vscode.workspace.findFiles("*").then(files => {
-        files.forEach( file => console.log(file.toString()));
+    vscode.workspace.findFiles("*").then( (files) => {
+        files.forEach( ( file ) => console.log(file.toString()));
     });
 
     /* Command for jumping to a location in a specific file;
@@ -19,8 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
 
        ? use new vscode.Range(line,0,line,0) to jump to line # (I think)*/
     context.subscriptions.push(vscode.commands.registerCommand('dotodo.jumpTo', (path: vscode.Uri, pos: vscode.Range) => {
-        vscode.workspace.openTextDocument(path).then(doc => {
-            vscode.window.showTextDocument(doc).then(editor => {
+        vscode.workspace.openTextDocument(path).then( (doc) => {
+            vscode.window.showTextDocument(doc).then( (editor) => {
                 // ?vscode.commands.executeCommand("revealLine", line, "center");
                 // let location = new vscode.Selection(line, 0, line, 0);
                 // vscode.window.activeTextEditor.
@@ -29,6 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
             });
         });
     }));
+
+    vscode.window.registerTreeDataProvider("dotodoExplorer", todos);
 
 }
 

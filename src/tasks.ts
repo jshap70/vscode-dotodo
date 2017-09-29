@@ -2,6 +2,14 @@
 
 import * as vscode from 'vscode';
 
+// Remember a back reference only to the Task's note and the Task's header
+// This will let us create a factory for Tasks based on the header, while building only 1 regex for all of them
+//
+// cool stuff.
+// also btw is case insensitive
+export let matchTaskString = '^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$';
+// export var matchTask = new RegExp(regexString, 'gim');
+
 // Todo Object, stores relevant info i
 export class Task extends vscode.TreeItem {
     public command: vscode.Command;
@@ -11,9 +19,9 @@ export class Task extends vscode.TreeItem {
         public pos: vscode.Range,
         public header: string,
         public note: string,
-        public actor?: string
+        public actor?: string,
      ) {
-        super(`${header}${actor !== undefined && actor !== "" ? actor : ""}: ${note}`);
+        super(`${header.toUpperCase()}${actor !== undefined && actor !== "" ? actor : ""}: ${note}`);
         this.command = {
             command: 'dotodo.jumpTo',
             title: '',
@@ -21,14 +29,4 @@ export class Task extends vscode.TreeItem {
         };
     }
 
-}
-
-export function matchCommentMarker(match: string) {
-    // Remember a back reference only to the Task's note and the Task's header
-    // This will let us create a factory for Tasks based on the header, while building only 1 regex for all of them
-    //
-    // cool stuff.
-    let regexString = `^\s*(?:#|\/\/)\s*(${match})\s*(.*?)\s*:\s*(.*?)\s*?$`;
-    // also btw is case insensitive
-    return new RegExp(regexString, 'gim');
 }

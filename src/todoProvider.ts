@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { Task, matchCommentMarker } from './tasks';
+import * as vscode from 'vscode';
+import { matchTaskString, Task } from './tasks';
 
 // class File extends vscode.TreeItem {
 
@@ -15,34 +15,37 @@ import { Task, matchCommentMarker } from './tasks';
 
 export class TaskFactory {
 
-    private constructors: Map<RegExp, (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string) => Task> = new Map();
+    private constructors: Map<string, (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string) => Task> = new Map();
+
+    constructor(labels: string[]) {
+        for (let label of labels) {
+            this.constructors.set(label, (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string): Task => {
+                return new Task(file, pos, label, note, actor);
+            });
+        }
+    }
 
     // takes a text document and returns all of the matching tasks
     public scan(doc: vscode.TextDocument): Task[] {
-        let text = doc.getText();
         let returns: Task[] = [];
-        for (let [pattern, fun] of this.constructors.entries()) {
-            let res: RegExpExecArray;
-            while ( (res = pattern.exec(text)) !== null) {
-                // let header = res[1];
-                // note that `header` here is pattern's matching string by definition
-                let actor = res[2];
-                let note = res[3];
+        let text = doc.getText();
+        let matchTask = new RegExp(matchTaskString, 'gim');
+        let res: RegExpExecArray;
+        while ( (res = matchTask.exec(text)) !== null) {
+            // `header` here is pattern's matching string by definition
+            let header = res[1];
+            let actor = res[2];
+            let note = res[3];
+            let fun = this.constructors.get(header);
+            if ( fun !== undefined ) {
                 let start = doc.positionAt(res.index); // index the match begins at, aka `^`
-                let end = doc.positionAt(pattern.lastIndex); // index the match ends at, aka `$`
+                let end = doc.positionAt(matchTask.lastIndex); // index the match ends at, aka `$`
                 let pos = new vscode.Range(start, end);
-                fun(doc.uri, pos, note, actor);
+                returns.push(fun(doc.uri, pos, note, actor));
             }
         }
 
         return returns;
-    }
-
-    // registers a new
-    public registerTaskClass(type: string): void {
-        this.constructors.set(matchCommentMarker(type), (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string): Task => {
-                return new Task(file, pos, type, note, actor);
-        });
     }
 
 }
@@ -67,9 +70,9 @@ export class TodoList implements vscode.TreeDataProvider<Task> {
     }
 
     public scanFile(file: vscode.Uri): vscode.ProviderResult<boolean> {
-        return new Promise(resolve => {
+        return new Promise( (resolve) => {
             try {
-                vscode.workspace.openTextDocument(file).then( doc => {
+                vscode.workspace.openTextDocument(file).then( (doc) => {
                     let text = doc.getText();
                     // fixme: run text through factory
                 });
