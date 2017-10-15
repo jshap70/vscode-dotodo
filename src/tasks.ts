@@ -9,7 +9,8 @@ import * as vscode from 'vscode';
 // also btw is case insensitive
 //
 // FIXME: make it so that this also can match `# TODO` w/ no message
-export let matchTask = /^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$/gmi;
+// export let matchTask = /^\s*(?:#|\/\/)\s*(.*?)\s*(\(.*?\))?\s*:\s*(.*?)\s*?$/gmi;
+export let matchTask = /^[ \t]*(?:#|\/\/)[ \t]*(.*?)[ \t]*(\(.*?\)?)?[ \t]*(?:[:-][ \t]*(.*?)[ \t]*?)?$/gmi;
 
 // Todo Object, stores relevant info i
 export class Task extends vscode.TreeItem {
@@ -19,7 +20,7 @@ export class Task extends vscode.TreeItem {
         public file: vscode.Uri,
         public pos: vscode.Range,
         public header: string,
-        public note: string,
+        public note?: string,
         public actor?: string,
      ) {
         super(`${header.toUpperCase()}${actor !== undefined && actor !== "" ? actor : ""}: ${note}`);

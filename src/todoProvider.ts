@@ -14,18 +14,18 @@ import { matchTask, Task } from './tasks';
 // }
 
 export class TaskFactory {
-    private constructors: Map<string, (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string) => Task>;
+    private constructors: Map<string, (file: vscode.Uri, pos: vscode.Range, note?: string, actor?: string) => Task>;
 
     constructor(labels: string[]) {
         this.constructors = new Map();
         for (let label of labels) {
-            this.constructors.set(label.toLowerCase(), (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string): Task => {
+            this.constructors.set(label.toLowerCase(), (file: vscode.Uri, pos: vscode.Range, note?: string, actor?: string): Task => {
                 return new Task(file, pos, label, note, actor);
             });
         }
     }
 
-    public get(header: string): (file: vscode.Uri, pos: vscode.Range, note: string, actor?: string) => Task {
+    public get(header: string): (file: vscode.Uri, pos: vscode.Range, note?: string, actor?: string) => Task {
         return this.constructors.get(header.toLowerCase());
     }
 
