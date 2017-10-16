@@ -54,11 +54,11 @@ export class TaskFactory {
 
 }
 
-export class TodoList implements vscode.TreeDataProvider<Task> {
+export class TodoList implements vscode.TreeDataProvider<Task | TaskHolder> {
 
     // TODO
-    private treeDidChangeData: vscode.EventEmitter<Task | undefined> = new vscode.EventEmitter<Task | undefined>();
-    public onDidChangeTreeData?: vscode.Event<Task | undefined> = this.treeDidChangeData.event;
+    private treeDidChangeData: vscode.EventEmitter<Task | TaskHolder | undefined> = new vscode.EventEmitter<Task | undefined>();
+    public onDidChangeTreeData?: vscode.Event<Task | TaskHolder | undefined> = this.treeDidChangeData.event;
 
     // actual storage map for tasks,
     // stored by file uri in string form b/c typescript maps only allow numbers and strings as keys
@@ -79,9 +79,11 @@ export class TodoList implements vscode.TreeDataProvider<Task> {
         return new Promise( (resolve) => {
             try {
                 vscode.workspace.openTextDocument(file).then( (doc) => {
-                    this.taskFactory.scan(doc).then( (tasks) => {
-                        this.tasks.set(file, tasks);
-                        this.treeDidChangeData.fire();
+                    this.taskFactory.scan(doc).then( (taskList) => {
+                        if ( taskList !== undefined && taskList.length > 0 ) {
+                            this.tasks.set(file, taskList);
+                            this.treeDidChangeData.fire();
+                        }
                     });
                 });
             } catch (err) {
@@ -91,23 +93,30 @@ export class TodoList implements vscode.TreeDataProvider<Task> {
     }
 
     // TODO
-    public getTreeItem(element: Task): vscode.ProviderResult<Task> {
+    public getTreeItem(element: Task | TaskHolder): vscode.ProviderResult<Task | TaskHolder> {
         return element;
     }
 
     // TODO
-    public getChildren(element?: Task): vscode.ProviderResult<Task[]> {
+    public getChildren(element?: Task | TaskHolder): vscode.ProviderResult<Task[] | TaskHolder[]> {
         if (element !== undefined) {
-            let fileTasks = this.tasks.get(element.file);
-            for (let task of fileTasks) {
-                if (element.pos.isEqual(task.pos)) {
-                    return [ task ];
+            if ( element instanceof TaskHolder ) {
+                let fileTasks = this.tasks.get(element.file);
+                return fileTasks;
+            } else {
+                let fileTasks = this.tasks.get(element.file);
+                for (let task of fileTasks) {
+                    if (element.pos.isEqual(task.pos)) {
+                        return [ task ];
+                    }
                 }
             }
         } else {
-            if ( this.tasks.size > 0 ) {
-                return Array.from( this.tasks.values() ).reduce((first, second) => first.concat(second));
+            let fileList: TaskHolder[] = [];
+            for (let file of this.tasks.keys()) {
+                fileList.push( new TaskHolder(file) );
             }
+            return fileList;
         }
         return [];
     }
@@ -115,3 +124,29 @@ export class TodoList implements vscode.TreeDataProvider<Task> {
 }
 
 // TODO: maybe use vscode.FileSystemWatcher?
+
+export class TaskHolder extends vscode.TreeItem {
+    public collapsibleState: vscode.TreeItemCollapsibleState.Collapsed;
+
+    constructor(
+        public file: vscode.Uri,
+    ) {
+        super(`${ relativePath(file) }`, vscode.TreeItemCollapsibleState.Collapsed);
+    }
+
+}
+
+function relativePath(path: vscode.Uri): string {
+    let fsPath: string = path.fsPath;
+    let root: string = vscode.workspace.rootPath;
+
+    if (!root) {
+        return fsPath;
+    }
+
+    if (fsPath.indexOf(root) === 0) {
+        return fsPath.replace(root, "").substr(1);
+    } else {
+        return fsPath;
+    }
+}

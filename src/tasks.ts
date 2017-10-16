@@ -23,7 +23,7 @@ export class Task extends vscode.TreeItem {
         public note?: string,
         public actor?: string,
      ) {
-        super(`${header.toUpperCase()}${actor !== undefined && actor !== "" ? actor : ""}: ${note}`);
+        super(`${header.toUpperCase()}${actor !== undefined && actor !== "" ? actor : ""} ${note !== undefined && note !== "" ? ": " + note : "" }`);
         this.command = {
             command: 'dotodo.jumpTo',
             title: '',

@@ -13,5 +13,22 @@
         "text",
         "typescript"
     ],
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "cSpell.words": [
+        "adipiscing",
+        "aliqua",
+        "amet",
+        "consectetur",
+        "dolore",
+        "dotodo",
+        "eiusmod",
+        "elit",
+        "enim",
+        "incididunt",
+        "labore",
+        "tempor",
+        "testrunner",
+        "todos"
+    ],
+    "cSpell.language": "en"
 }
