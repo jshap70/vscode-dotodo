@@ -1,4 +1,4 @@
-# vscode-dotodo README
+# vscode-dotodo [![Build Status](https://travis-ci.org/jshap70/vscode-todotodo.svg?branch=master)](https://travis-ci.org/jshap70/vscode-todotodo)
 
 This is the README for "dotodo".
 

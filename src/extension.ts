@@ -10,18 +10,26 @@ export function activate(context: vscode.ExtensionContext) {
 
     let todos: TodoList = new TodoList(factory);
 
-    vscode.workspace.findFiles("**/*.*", '**/node_modules/*', 10).then( (files) => {
-        // FIXME: this is also finding a bunch of things we don't want, like binary files.
-        //        it is also super duper slow
-        if ( files !== undefined && files.length > 0 ) {
-            files.forEach( ( file ) => {
-                todos.scanFile(file);
-            });
-        }
-    });
-    // vscode.workspace.textDocuments.forEach( (doc) => {
-    //     todos.scanFile(doc.uri);
+    // vscode.workspace.findFiles("**/*.*", '**/node_modules/*', 10).then( (files) => {
+    //     // FIXME: this is also finding a bunch of things we don't want, like binary files.
+    //     //        it is also super duper slow
+    //     if ( files !== undefined && files.length > 0 ) {
+    //         files.forEach( ( file ) => {
+    //             todos.scanFile(file);
+    //         });
+    //     }
     // });
+
+    vscode.workspace.textDocuments.forEach( (doc) => {
+        todos.scanFile(doc.uri);
+    });
+
+    function updateFile(e: vscode.TextDocumentChangeEvent) {
+        todos.scanFile(e.document.uri);
+    }
+
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument( (e) => todos.scanFile(e.document.uri) ));
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument( (e) => todos.scanFile(e.uri) ));
 
     /* Command for jumping to a location in a specific file;
        Used as the "on click" function in the tree.
